@@ -1,0 +1,105 @@
+name: Kampanyaları güncelle ve yayımla
+
+on:
+  schedule:
+    - cron: '0 3 1,15 * *'
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - index.html
+      - data/**
+      - scraper/**
+      - tests/**
+      - .github/workflows/kampanya-guncelle.yml
+
+permissions:
+  contents: read
+
+concurrency:
+  group: aylik-kampanyalar-main
+  cancel-in-progress: false
+
+jobs:
+  hazirla:
+    runs-on: ubuntu-latest
+    timeout-minutes: 35
+    permissions:
+      contents: write
+    outputs:
+      scraper-sonuc: ${{ steps.scrape.outcome }}
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          ref: main
+      - uses: actions/setup-python@v6
+        with:
+          python-version: '3.12'
+          cache: pip
+          cache-dependency-path: scraper/requirements.txt
+      - name: Bağımlılıkları kur
+        run: python -m pip install -r scraper/requirements.txt
+      - name: Hesap ve veri koruma kontrolleri
+        run: |
+          node --test tests/engine.test.cjs
+          python -m unittest discover -s tests -p 'test_*.py'
+      - name: İlk veri kontrolü
+        id: initial
+        run: |
+          python - <<'PY'
+          import json, os
+          data = json.load(open('data/kampanyalar.json'))
+          with open(os.environ['GITHUB_OUTPUT'], 'a') as f:
+              f.write('needed=' + str(not data.get('guncelleme')).lower() + '\n')
+          PY
+      - name: Chromium kur
+        if: github.event_name != 'push' || steps.initial.outputs.needed == 'true'
+        run: python -m playwright install --with-deps chromium
+      - name: Kampanyaları topla
+        id: scrape
+        if: github.event_name != 'push' || steps.initial.outputs.needed == 'true'
+        continue-on-error: true
+        run: python scraper/scrape.py
+      - name: Değişen veriyi kaydet
+        if: always() && !cancelled() && steps.scrape.outcome != 'skipped'
+        run: |
+          if ! git diff --quiet -- data/kampanyalar.json; then
+            git config user.name 'github-actions[bot]'
+            git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+            git add data/kampanyalar.json
+            git commit -m 'Kampanya verilerini güncelle'
+            git push origin HEAD:main
+          fi
+      - name: Yalnız herkese açık uygulama dosyalarını hazırla
+        run: |
+          mkdir -p _site/data
+          cp index.html _site/index.html
+          cp data/kampanyalar.json _site/data/kampanyalar.json
+          touch _site/.nojekyll
+      - uses: actions/upload-pages-artifact@v4
+        with:
+          path: _site
+
+  yayimla:
+    needs: hazirla
+    runs-on: ubuntu-latest
+    permissions:
+      pages: write
+      id-token: write
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - uses: actions/configure-pages@v5
+      - name: GitHub Pages yayını
+        id: deployment
+        uses: actions/deploy-pages@v4
+
+  veri-hatasini-bildir:
+    needs: [hazirla, yayimla]
+    if: always() && needs.hazirla.outputs.scraper-sonuc == 'failure'
+    runs-on: ubuntu-latest
+    steps:
+      - run: |
+          echo '::error::Bir veya daha fazla banka güncellenemedi. Son geçerli veri korundu. Toplayıcı günlüklerini kontrol edin.'
+          exit 1

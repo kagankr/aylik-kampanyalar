@@ -1,0 +1,51 @@
+{
+  "https://www.maximum.com.tr/kampanyalar/maximumdan-market-alisverislerinize-1000lira-maxipuan-kampanyasi": {
+    "kosulHash": "0735da5775a55096b74c0476b6c286b9595c1d0ff96a6b65d6e9085ed3af8f0a",
+    "baslangic": "2026-09-01",
+    "bitis": "2026-09-30",
+    "minHarcama": 10000,
+    "sabitKazanc": 500,
+    "ustLimit": 1000,
+    "kademeler": [
+      {
+        "minHarcama": 10000,
+        "sabitKazanc": 500
+      },
+      {
+        "minHarcama": 20000,
+        "sabitKazanc": 1000
+      }
+    ],
+    "puanTipi": "serbest",
+    "kategori": [
+      "market"
+    ],
+    "marka": null,
+    "katilimGerekli": true,
+    "kanal": "her",
+    "kosul": "İlk uygun peşin alışveriş ve müşteri başına bir kez. Maximum anlaşmalı market ve POS şartı var. Aidatsız, Vadematik ve ticari kartlar hariç. Katılım dönem içinde yapılmalı. Puanlar 9 Ekim’de yüklenir, 30 Kasım’da sona erer. Önceden kullanmadığınız varsayılır.",
+    "tahmini": false,
+    "hesaplanabilir": true,
+    "taksitAy": 0
+  },
+  "https://www.bankkart.com.tr/kampanyalar/market-ve-gida/okula-donus-market-alisverislerinize-1000-tlye-varan-jest-lira": {
+    "kosulHash": "d8275b52026384a1eea9e90a35c15300d80dfef64ed4906d7e420849c8d6ef2c",
+    "baslangic": "2026-09-01",
+    "bitis": "2026-09-30",
+    "minHarcama": 5000,
+    "sabitKazanc": 250,
+    "ustLimit": 1000,
+    "kademeler": [],
+    "puanTipi": "serbest",
+    "kategori": [
+      "market"
+    ],
+    "marka": null,
+    "katilimGerekli": true,
+    "kanal": "fiziksel",
+    "kosul": "Alışverişten önce katılım, Bankkart üye işyeri ve POS şartı var. E-ticaret hariç. Aynı gün aynı işyerinde yalnız ilk işlem. Jest, Prestij ve Genç kredi kartları dahil; Jest Ücretsiz ve ticari kartlar hariç. Aylık 1.000 TL tavanın kullanılmadığı varsayılır.",
+    "tahmini": false,
+    "hesaplanabilir": true,
+    "taksitAy": 0
+  }
+}
