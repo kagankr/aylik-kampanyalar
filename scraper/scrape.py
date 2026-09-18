@@ -2,7 +2,7 @@
 
 Default: Chromium/Playwright. --http reads the banks' server-rendered HTML;
 it is useful for diagnostics where Chromium is not installed.
-Only a reviewed, text-hash-bound rule is used for monetary recommendations.
+Reviewed, text-hash-bound rules and conservative grammars enable monetary recommendations.
 Title hints never turn a monthly 'up to' cap into a per-purchase reward.
 """
 from __future__ import annotations
@@ -136,7 +136,7 @@ def apply_rule(campaign, text, rules):
     if not rule:
         automatic_rule(campaign, text)
     if rule and rule.get("kosulHash") == fingerprint(text) and rule.get("baslangic") == campaign["baslangic"] and rule.get("bitis") == campaign["bitis"]:
-        allowed = {"minHarcama", "ustLimit", "oran", "sabitKazanc", "taksitAy", "puanTipi", "katilimGerekli", "kategori", "marka", "kademeler", "kanal", "kosul", "tahmini", "hesaplanabilir", "pesinFiyatina"}
+        allowed = {"minHarcama", "ustLimit", "oran", "sabitKazanc", "taksitAy", "puanTipi", "katilimGerekli", "kategori", "marka", "kademeler", "kanal", "kosul", "tahmini", "hesaplanabilir", "pesinFiyatina", "kapsam"}
         campaign.update({k: v for k, v in rule.items() if k in allowed})
     return campaign
 
@@ -176,7 +176,7 @@ def automatic_rule(campaign, text):
 def initial_data():
     colors = ["#ae176e", "#bf2539", "#147846", "#344967"]
     programs = ["maximum", "bankkart", "bonus", "maximum"]
-    return {"surum": 1, "guncelleme": None, "kategoriler": KATEGORILER, "kartlar": [{"id": f"kart-{i+1}", "ad": f"Kart {i+1}", "sahip": "", "program": programs[i], "banka": "", "kesimGunu": None, "renk": colors[i], "aktif": False} for i in range(4)], "kampanyalar": [], "kaynaklar": {}}
+    return {"surum": 1, "guncelleme": None, "kategoriler": KATEGORILER, "kartlar": [{"id": f"kart-{i+1}", "ad": f"Kart {i+1}", "sahip": "", "program": programs[i], "banka": "", "renk": colors[i], "aktif": False} for i in range(4)], "kampanyalar": [], "kaynaklar": {}}
 
 
 def merge_results(old, fresh, errors, now):

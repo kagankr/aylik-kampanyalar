@@ -47,5 +47,136 @@
     "tahmini": false,
     "hesaplanabilir": true,
     "taksitAy": 0
+  },
+  "https://www.maximum.com.tr/kampanyalar/maximumdan-etsnin-erken-rezervasyon-indirimlerine-ek-yuzde5-indirim": {
+    "kosulHash": "7b1329d7dc618d80a746df8453771ee86acc07b723f27163383845adb1b95a78",
+    "baslangic": "2026-09-01",
+    "bitis": "2026-09-30",
+    "kategori": [
+      "seyahat"
+    ],
+    "minHarcama": 0,
+    "oran": 0.05,
+    "sabitKazanc": null,
+    "ustLimit": null,
+    "kademeler": [],
+    "taksitAy": 0,
+    "hesaplanabilir": true,
+    "tahmini": false,
+    "marka": "ETS",
+    "kanal": "online",
+    "puanTipi": "nakit",
+    "katilimGerekli": false,
+    "kapsam": "Seçili oteller",
+    "kosul": "ETS’nin kampanyaya dahil otellerinde, 30 Eylül 2026’ya kadar konaklamalar için geçerli. Ödeme ekranında Maximum %5 ek indirim seçilmeli ve Maximum POS kullanılmalı. Aidatsız ve ticari kartlar hariç. Girilen tutar indirim öncesi uygun rezervasyon bedeli olmalı."
+  },
+  "https://www.bonus.com.tr/kampanyalar/jolly-tur-indirim-kampanyasi": {
+    "kosulHash": "9ed8854e93c98cc19b81579257528c460c52cb39eda38f4d795edd733380e91c",
+    "baslangic": "2026-09-01",
+    "bitis": "2026-09-30",
+    "kategori": [
+      "seyahat"
+    ],
+    "minHarcama": 0,
+    "oran": 0.05,
+    "sabitKazanc": null,
+    "ustLimit": null,
+    "kademeler": [],
+    "taksitAy": 0,
+    "hesaplanabilir": true,
+    "tahmini": false,
+    "marka": "Jolly",
+    "kanal": "her",
+    "puanTipi": "nakit",
+    "katilimGerekli": false,
+    "kapsam": "Seçili yurt içi ve şehir otelleri",
+    "kosul": "Yalnız seçili yurt içi ve şehir otellerinde yeni rezervasyonlarda geçerli. Garanti BBVA Bonus ve Garanti POS ile ödemenin tamamı yapılmalı. Otel ve taksit seçeneğine göre kapsam değişir; uçak bileti ve turlar dahil değildir. Girilen tutar indirim öncesi uygun rezervasyon bedeli olmalı."
+  },
+  "https://www.bankkart.com.tr/kampanyalar/turizm-ve-seyahat/hava-yolu-bilet-aliminiza-6000-tl-jest-lira": {
+    "kosulHash": "c3ae19688b423b19e858282f6f9ee43b5cab7c6abd23a9188c5cf5a0ae71e67b",
+    "baslangic": "2026-09-01",
+    "bitis": "2026-09-30",
+    "kategori": [
+      "seyahat"
+    ],
+    "minHarcama": 4000,
+    "oran": null,
+    "sabitKazanc": null,
+    "ustLimit": 6000,
+    "kademeler": [
+      {
+        "minHarcama": 4000,
+        "sabitKazanc": 350
+      },
+      {
+        "minHarcama": 10000,
+        "sabitKazanc": 800
+      },
+      {
+        "minHarcama": 25000,
+        "sabitKazanc": 1500
+      },
+      {
+        "minHarcama": 50000,
+        "sabitKazanc": 3000
+      },
+      {
+        "minHarcama": 100000,
+        "sabitKazanc": 6000
+      }
+    ],
+    "taksitAy": 0,
+    "hesaplanabilir": true,
+    "tahmini": false,
+    "marka": "THY / Pegasus / AJet / SunExpress",
+    "kanal": "her",
+    "puanTipi": "serbest",
+    "katilimGerekli": true,
+    "kapsam": "Havayolundan doğrudan uçak bileti",
+    "kosul": "Bireysel Bankkart ile belirtilen havayollarından doğrudan tek seferde bilet alımı ve Bankkart POS şartı var. Aracı bilet siteleri dahil değil. Alışverişten önce katılım gerekli. Müşteri başına tek kazanım; önceki kullanım bilinmez. Jest Lira 7 Ekim 2026’da yüklenir. Ücretsiz ve ticari kartlar hariç."
+  },
+  "https://www.bonus.com.tr/kampanyalar/qcar-mobilite-taksit-kampanyasi": {
+    "kosulHash": "9c9198ea5eb7f82bffb157c29e92ca15d3b4a4c51138e10d9fa74bc7b5e20836",
+    "baslangic": "2026-04-01",
+    "bitis": "2026-12-31",
+    "kategori": [
+      "seyahat"
+    ],
+    "minHarcama": 0,
+    "oran": 0.4,
+    "sabitKazanc": null,
+    "ustLimit": null,
+    "kademeler": [],
+    "taksitAy": 5,
+    "hesaplanabilir": true,
+    "tahmini": false,
+    "marka": "QCAR Mobilite",
+    "kanal": "online",
+    "puanTipi": "nakit",
+    "katilimGerekli": false,
+    "kapsam": "Araç kiralama · indirim öncesi liste fiyatı",
+    "kosul": "Yalnız qcar.com.tr üzerinden online ödemeli, 1–29 günlük kiralamalarda liste fiyatı üzerinden %40 indirim. Garanti BBVA kredi kartı ve Garanti POS gerekli; sanal kart, Paracard ve Altın Bonus hariç. Başka indirimlerle birleşmez. Araç uygunluğu ve depozito koşulları geçerli. Girilen tutar kampanya öncesi uygun araç kiralama bedeli olmalı."
+  },
+  "https://www.bonus.com.tr/kampanyalar/budget-arac-kiralama-kampanya": {
+    "kosulHash": "82873faedbd1ef4ebddd9f4aad49ae5e05f99c1284058f4c8704ad4f5eb1dfd6",
+    "baslangic": "2026-01-01",
+    "bitis": "2026-09-30",
+    "kategori": [
+      "seyahat"
+    ],
+    "minHarcama": 0,
+    "oran": 0.35,
+    "sabitKazanc": null,
+    "ustLimit": null,
+    "kademeler": [],
+    "taksitAy": 0,
+    "hesaplanabilir": true,
+    "tahmini": false,
+    "marka": "Budget",
+    "kanal": "online",
+    "puanTipi": "nakit",
+    "katilimGerekli": true,
+    "kapsam": "Türkiye’de günlük binek araç kiralama",
+    "kosul": "BonusFlaş’tan kampanyaya katılıp indirim kodu alınmalı ve Budget’ın ilgili rezervasyon sayfasında kullanılmalı. Türkiye’de günlük binek araç kiralamalarında, müşteri başına ayda bir kez geçerli. Garanti POS gerekli; Altın Bonus hariç. Diğer indirimlerle birleşmez. Girilen tutar kampanya öncesi uygun kiralama bedeli olmalı."
   }
 }

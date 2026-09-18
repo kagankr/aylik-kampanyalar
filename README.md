@@ -1,114 +1,65 @@
 # Hangi kart · Aylık kampanyalar
 
-Maximum, Bankkart ve Bonus programlarına bağlı dört kartı, belirli bir alışverişin kampanya ve vade değeriyle karşılaştıran Türkçe statik uygulama. Hesaplar cihazda yapılır. Sunucu, veritabanı, üyelik veya kart numarası gerekmez.
+[Uygulamayı aç](https://kagankr.github.io/aylik-kampanyalar/)
 
-## İlk kullanım
+Maximum, Bankkart ve Bonus kampanyalarını alışveriş tutarı ve kategorisine göre karşılaştırır. Her kartın en çok kazandıran tek kampanyasını bulur; önerilen kartı, kampanya adını, geçerli marka/hizmeti ve TL kazancını gösterir.
 
-1. Uygulamayı açıp **Kartlarım & ayarlar** bölümüne girin.
-2. Her kartın adını, sahibini, programını, hesap kesim gününü ve rengini girip karşılaştırmaya dahil edin. Kişisel bilgiler bilinmediği için dört kart başlangıçta kapalıdır. İlk programlar ve renkler düzenlenebilir şablondur; belirli bir fiziksel kart ürünü iddiası değildir.
-3. Tutar, kategori, tarih, gerekiyorsa marka ve mağaza/internet kanalını seçin.
-4. Önerinin gerekçesini ve bankanın koşullarını okuyun. Kampanyaya bankanın uygulamasından katıldıktan sonra ilgili kartın **katıldım** notunu işaretleyin.
-5. Size özel kampanyaları elle ekleyin. Telefon ve bilgisayar arasındaki ayar aktarımı için yedek indirip diğer cihazda yükleyin.
+## Kullanım
 
-Yedi başlangıç kategorisi Market, Akaryakıt, Yemek & kafe, Giyim, Elektronik & ev, Seyahat ve Online alışveriştir. Kategoriler ve hesap motoru `index.html` içindedir.
+1. Tutar ve kategori seçin. Tarih varsayılan olarak bugündür; isterseniz alışveriş kanalını daraltın.
+2. Yüzde indirimler için kampanya öncesi tutarı girin.
+3. Önerilen kartın altında kampanyanın geçerli olduğu markayı, ürün veya hizmeti ve koşullarını okuyun. Seyahat kategorisi otel, uçak bileti ve araç kiralama gibi farklı hizmetleri kapsar; öneri belirtilen hizmet ve markaya bağlıdır.
+4. İsterseniz **Kartlarım & ayarlar** bölümünden dört kişisel kartınızı tanımlayın. Kart eklenmezse üç banka programı karşılaştırılır. Hesap kesim günü gerekmez.
+5. Bankanın uygulamasından katıldıktan sonra **katıldım** notunu işaretleyin. Kişiye özel kampanyaları elle ekleyebilirsiniz.
+
+## Hesap
+
+- Sabit kazanç, tutarın yüzdesi veya harcama kademesine karşılık gelen tutar kullanılır; varsa kazanç tavanı uygulanır.
+- Puanlar bankanın belirttiği TL karşılığıyla gösterilir. Kullanım türü ayrıca yazılır; nakit, serbest puan ve markaya özel puan için katsayı uygulanmaz.
+- Vade, faiz/getiri, kesim tarihi ve taksitlerin zaman değeri hesapta yer almaz. Taksit sayısı yalnız kampanya bilgisi olarak kalır.
+- Marka girişi yoktur. Seçili kategorideki markaya özel kampanyalar da karşılaştırılır; önerinin kapsamı açıkça gösterilir.
+- Ayrı kampanyalar toplanmaz. Hiçbir teklif hesaplanamıyorsa kazanan kart uydurulmaz; neden gösterilir.
+- Kullanılmış müşteri limiti, önceki alışverişler, kişisel uygunluk, kart alt türü ve gerçek işyeri/POS uygunluğu bilinmez. Sonuç koşulludur.
+
+Başlıktaki “7.500 TL’ye varan” tutar tek alışveriş kazancı sayılmaz. Koşulu veya tarihi belirsiz kayıtlar listelenir ama sayısal sıralamaya alınmaz. `data/dogrulanmis-kosullar.json` içindeki incelenmiş kurallar URL, tarih ve koşul metninin SHA-256 özetiyle eşleşir; koşul değişirse kural uygulanmaz. Toplayıcı ayrıca dar ve açık tek alışveriş ifadelerini çözebilir.
+
+## Takvim ve yerel kayıt
+
+Takvim düğmesi, seçilen tutar ve kategoride kazanç sağlayan kampanyaların **son günleri** için `.ics` dosyası üretir. Etkinlikte kart, marka, kazanç ve koşullar bulunur. Önceki akşam Türkiye saatiyle 20.00 için hatırlatma eklenir. Takvim bir abonelik değildir ve otomatik değişmez.
+
+Kartlar, katılım notları ve kişisel kampanyalar yalnız tarayıcıdaki `localStorage` içinde saklanır. Banka hesabına bağlanılmaz; kart numarası istenmez. Ayar yedeğiyle cihazlar arasında aktarılabilir. Eski sürüm yedekleri ve kart kayıtları okunur; eski vade/getiri ayarları kullanılmaz. Tarayıcı verilerinin silinmesi yerel kayıtları siler.
 
 ## Dosyalar
 
-```text
-index.html                              Arayüz, hesap motoru, yerel kayıt ve ICS
-data/kampanyalar.json                    Herkese açık kart şablonları ve kampanyalar
-data/dogrulanmis-kosullar.json           Metin özeti hash'ine bağlı gözden geçirilmiş kurallar
-scraper/scrape.py                        Playwright toplayıcı
-scraper/requirements.txt                 Python bağımlılıkları
-.github/workflows/kampanya-guncelle.yml  Zamanlayıcı, kontroller ve Pages yayını
-tests/                                  Hesap, takvim ve veri koruma kontrolleri
-```
+- `index.html`: tek dosyalık arayüz, hesap motoru, yerel kayıt ve takvim
+- `data/kampanyalar.json`: halka açık kampanyalar ve boş kart şablonları
+- `data/dogrulanmis-kosullar.json`: incelenmiş ve koşul metnine bağlı hesap kuralları
+- `scraper/scrape.py`: Playwright toplayıcı
+- `.github/workflows/kampanya-guncelle.yml`: zamanlayıcı, kontroller ve GitHub Pages yayını
+- `tests/`: hesap, takvim ve veri koruma kontrolleri
 
-Arayüz CSS ve JavaScript'i tek HTML'dedir; ayrı paket derleme adımı veya CDN bağımlılığı yoktur. Kampanyalar JSON'dan okunur. Kişisel kartlar, katılım işaretleri ve elle eklenen kampanyalar **yalnız `localStorage` içinde** saklanır; GitHub'a gönderilmez. İndirilen ayar yedeği kişisel bilgileri içerir. Tarayıcı verilerini silmek yerel ayarları siler. Kalıcı kayıt engellenirse ekranda uyarı görünür.
+## Otomasyon
 
-`index.html` dosyasını diskten çift tıklayarak açmak, tarayıcının `fetch` kısıtlaması nedeniyle JSON'u otomatik okuyamayabilir. GitHub Pages üzerinden kullanın veya ayarlardan kampanya JSON'unu elle yükleyin. Son başarılı kamuya açık veri tarayıcıda önbelleğe alınır; ağ sorunu sırasında kullanılabilir. Bu, arayüzün kendisinin çevrimdışı yükleneceği garantisini vermez.
+GitHub Actions ayın **1 ve 15’inde 03.00 UTC / Türkiye saatiyle 06.00** için ayarlanmıştır. GitHub çalışmaları geciktirebilir. Elle güncellemek için **Actions → Kampanyaları güncelle ve yayımla → Run workflow** kullanılır. Pages kaynağı **GitHub Actions** olmalıdır.
 
-## Hesap yaklaşımı
+Toplayıcı Maximum listesini, Bankkart’ın 15 kategori sayfasını ve Bonus listesini tarar. Meşru boş kategorileri tanır, çerez ve tanıtım pencerelerini normal kapatma düğmeleriyle kapatır. Daha fazla düğmesinde toplam veya görünür kampanya sayısı artmayı bırakınca durur. Chromium bağlantısı sıfırlanırsa aynı açık URL bir kez HTTP üzerinden okunabilir; erişim engelleri aşılmaz.
 
-- **Vade:** bir sonraki gerçek hesap kesim tarihi bulunur. Ayda olmayan 29–31 günleri ayın son gününe çekilir. Kesim günü yapılan işlemin mevcut ekstreye girdiği varsayılır. Son ödeme yaklaşık kesim + 10 gündür; ayarlardan değişir. Hafta sonu, bankanın işlem saati ve resmi son ödeme tarihindeki kaymalar modellenmez.
-- **Vade değeri:** `tutar × aylık getiri × vade günü / 30`.
-- **Kampanya:** harcama başına sabit tutar veya yüzdelik kazanç, varsa tavan ve harcama kademeleri. Nakit katsayısı 1, serbest puan 0,80, markaya kilitli puan 0,40. Katsayılar düzenlenebilir.
-- **Taksit:** peşin fiyatı aynı, vade farksız ve eşit aylık taksitler için `tutar × aylık getiri × (taksit sayısı − 1) / 2`. İlk taksit normal son ödeme tarihinde varsayılır. Vade farkı olan teklifleri elle bu türde eklemeyin.
-- **Sıralama:** her karta uyan tek en değerli kampanya seçilir; farklı kampanyalar birleştirilmez. Kampanya + taksit + vade değeri sıralanır. Fark 1 TL'den küçükse iki kart da uygun gösterilir.
+Banka başına varsayılan en fazla 80 detay, eşzamanlı en fazla üç detay okunur. İncelenmiş kurallar önceliklendirilir; tüm liste kayıtları korunur. En az 30 toplam kayıt, banka başına en az 10 kayıt ve önceki sayıya göre en fazla %50 düşüş aranır. Başarısız bankanın eski verisi korunur. Hiçbir banka başarılı değilse JSON değişmez. Yazma atomiktir. Kişisel kart ve katılım kayıtları güncellemeden bağımsızdır.
 
-Aylık %3, güncel piyasa oranı iddiası değil, kullanıcının değiştirebileceği bir varsayımdır. Bu basit karşılaştırma bileşik iskonto, vergi, puan kullanma tarihi veya kart borcu faizi hesabı değildir. Ekstre borcunun tamamının ödendiğini varsayar. Sonuç garanti nakit kazanç değil, koşullu yaklaşık ekonomik değerdir.
+Workflow kontrolleri çalıştırır, JSON değişirse depoya işler ve Pages’i yayımlar. Toplama sorunu olursa son geçerli veri yayımlanır, hata ayrı job ile bildirilir. HTML veya kod değişikliği mevcut veriyi tekrar toplamadan yayımlanır. Herkese açık depoda özel kart bilgileri saklanmamalıdır; uygulamadaki kişisel ayarlar GitHub’a gönderilmez.
 
-## Belirsiz kampanyalar
-
-Toplayıcı başlıktan alt limit, üst limit, yüzdelik oran ve taksit **ipuçları** çıkarır. `1.250 TL'ye varan` ifadesini tek alışverişte 1.250 TL kazanılacakmış gibi yorumlamaz. Tarih veya koşulu net olmayan kayıtlar `tahmini: true`, `hesaplanabilir: false` ile listelenir ve sayısal sıralamaya katılmaz.
-
-Sayısal hesap iki yoldan açılır:
-
-1. Metni ve kampanya tarihleri doğrulanmış kural: `dogrulanmis-kosullar.json` içindeki URL, tam temizlenmiş metnin SHA-256 özeti ve başlangıç/bitiş tarihleri birlikte eşleşmelidir. Banka aynı URL'deki koşulu değiştirirse önceki kural devre dışı kalır.
-2. Dar otomatik dil kuralları: Bankkart'ın açıkça “tek seferde ... ve üzeri her alışverişiniz ile ... TL” dediği teklifler veya markası, tarihleri ve tek taksit adedi açık olan peşin fiyatına taksitler. “Varan”, ürün grubuna göre değişen, ücretli veya başka koşullu taksit ifadeleri hesap dışında kalır.
-
-Otomatik çözüm kart alt türü, işyeri/POS, kişisel uygunluk, önceki harcama ve kullanılmış müşteri limitini doğrulayamaz. Bunlar koşul uyarısında gösterilir. Bankanın uygulamasındaki kişiye özel teklifler web sitesinde görünmeyebilir. Bu nedenle bulunan kampanya sayısı, aynı sayıda teklifin hesaplanabildiği anlamına gelmez.
-
-Marka eşleşmesi Türkçe harfleri ve noktalama farklarını normalleştirir ama alt dize eşleşmesi yapmaz. Marka boşsa markaya özel kampanyalar öneriye alınmaz. Katılım notları **kart + kampanya + tarih dönemi** ile anahtarlanır; yeni ayın aynı URL'deki kampanyasına eski katılım taşınmaz.
-
-## Takvim
-
-`.ics` dosyası tarayıcıda oluşturulur. 3, 6 veya 12 ay için gelecek dönem başlangıçlarında birer tam gün etkinliği üretir. Varsayılan dönemler **6–20 / 21–5**; alternatif **1–15 / 16–ay sonu**.
-
-Etkinlik başlığında dönemde en sık öne çıkan kart vardır. Açıklamasında yedi kategorinin her biri için gün aralıkları, kart değişimleri, yaklaşık değer ve gerekçe bulunur. Hesapta ekrandaki örnek tutar kullanılır; markaya özel kampanyalar takvime alınmaz. Hatırlatma önceki gün Türkiye saatiyle 20.00'ye (17.00 UTC) ayarlanır. Takvim uygulamasının bildirim izni ve alarm desteği gerekir.
-
-Sonraki ayların kampanyaları henüz bilinmediği için uzak tarihler çoğunlukla vadeye dayanır. Takvim bir abonelik değildir; indirilen dosya otomatik değişmez. Güncel veriyle yeniden oluşturulabilir. Aynı dönemlerin UID'si sabittir; yeniden içe alma davranışı takvim uygulamasına bağlıdır.
-
-## GitHub Pages kurulumu
-
-Depo adı: **`aylik-kampanyalar`**. Görünen uygulama adı: **Aylık kampanyalar / Hangi kart**.
-
-1. Dosyaları `main` dalına koyun.
-2. **Settings → Pages → Build and deployment → Source: GitHub Actions** seçin.
-3. **Actions → Kampanyaları güncelle ve yayımla → Run workflow** ile ilk yayını başlatın.
-4. Yayın adresi Pages ayarlarında ve Actions `github-pages` ortamında görünür.
-
-Yayın adımı yalnız `index.html` ve `data/kampanyalar.json` dosyalarını yayımlar. Repo herkese açıksa kaynak kodu ve repodaki JSON da herkese açıktır; gerçek kişisel kart bilgilerini kamuya açık JSON'a yazmayın. Arayüzdeki yerel kart ayarları repoya aktarılmaz.
-
-Zamanlayıcı **ayın 1 ve 15'inde 03.00 UTC / Türkiye saatiyle 06.00** çalışır. GitHub zamanlanmış görevleri geciktirebilir; kesin dakika garantisi yoktur. Herkese açık depolarda uzun süre etkinlik olmazsa GitHub zamanlanmış görevleri devre dışı bırakabilir. Actions ekranındaki durumu kontrol edin.
-
-Workflow testleri çalıştırır, gerektiğinde Chromium kurar, veriyi toplar, değişen JSON'u bot hesabıyla `main` dalına işler ve aynı çalışmada Pages'i yayımlar. Böylece bot commit'inin yeni bir workflow tetiklemesine bağımlı değildir. Toplayıcı hata verse bile son geçerli veriyi yayımlar, ardından hata bildiren bir job başarısız olur. Chromium kurulumunun veya testlerin başarısızlığı güncelleme ve yayını durdurur; mevcut Pages yayını kalır. Dal koruması botun commit atmasını engellerse workflow günlüklerinde görünür.
-
-## Toplayıcıyı yerelde çalıştırma
-
-Python 3.12+ ve Node.js 20+ önerilir.
+## Geliştirme
 
 ```bash
-python -m venv .venv
-source .venv/bin/activate
 python -m pip install -r scraper/requirements.txt
 python -m playwright install chromium
 python scraper/scrape.py
-```
-
-Chromium bulunmayan ortamlarda bankanın sunucuda oluşturduğu HTML'i okumak için:
-
-```bash
-python scraper/scrape.py --http --details 80
-```
-
-`--http` JavaScript düğmelerini çalıştırmaz; varsayılan otomasyon yolu Playwright'tır. Site bir erişim kontrolü koyarsa bunu aşmak için kullanılmamalıdır. `SITELER` sözlüğü seçicileri tek yerde toplar. Maximum'da arşivler dışarıda bırakılır. Bankkart'ta ana sayfadaki sekiz kayıt yerine 15 kategori gezilir ve URL ile tekilleştirilir. “Daha fazla” düğmesinde toplam/görünür kart sayısı artmayı bırakınca durulur. Banka başına varsayılan en fazla 80 detay, eşzamanlı en fazla 3 detay okunur; tüm liste kayıtları korunur.
-
-Güvenlik eşikleri: toplam en az 30, banka başına en az 10 kayıt ve önceki banka sayısına göre %50'den fazla düşmeme. Başarısız bankanın eski kayıtları korunur; diğer bankalar güncellenebilir. Hiçbir banka başarılı değilse veya toplam 30'un altındaysa dosya değişmez. Yazma geçici dosya + atomik değiştirme ile yapılır. Eski JSON'daki kart şablonları korunur. Tarayıcıdaki katılım notları zaten toplayıcıdan bağımsızdır; varsa eski JSON katılım alanları yalnız aynı kampanya dönemine taşınır.
-
-## Kontroller
-
-```bash
 node --test tests/engine.test.cjs
 python -m unittest discover -s tests -p 'test_*.py'
 ```
 
-Kontroller gerçek ay uzunlukları, artık yıl, yıl geçişi, alt limit ve tavan, puan katsayıları, kampanyaların birleşmemesi, marka/kart/kanal kapsamı, taksit hesabı, UTF-8 ICS satır katlama, takvim dönemleri, tarihi ödül kullanım tarihiyle karıştırmama, kaynak başına koruma ve atomik yazmayı kapsar.
+`--http` seçeneği JavaScript düğmelerini çalıştırmadan sunucunun HTML’ini okur. `--details` detay sınırını değiştirir. Arayüzü GitHub Pages veya yerel HTTP sunucusunda açın; dosyaya çift tıklamak JSON okumasını engelleyebilir. Son geçerli kampanya verisi tarayıcıda önbelleğe alınır.
 
-## Resmî kaynaklar
+## Kaynaklar
 
-- [Maximum kampanyaları](https://www.maximum.com.tr/kampanyalar)
-- [Bankkart kampanyaları](https://www.bankkart.com.tr/kampanyalar)
-- [Bonus kampanyaları](https://www.bonus.com.tr/kampanyalar)
-- [GitHub Pages özel workflow belgeleri](https://docs.github.com/en/pages/getting-started-with-github-pages/using-custom-workflows-with-github-pages)
-- [GitHub zamanlanmış workflow davranışı](https://docs.github.com/en/actions/reference/workflows-and-actions/events-that-trigger-workflows#schedule)
+[Maximum](https://www.maximum.com.tr/kampanyalar) · [Bankkart](https://www.bankkart.com.tr/kampanyalar) · [Bonus](https://www.bonus.com.tr/kampanyalar)
