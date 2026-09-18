@@ -25,8 +25,8 @@ from bs4 import BeautifulSoup
 ROOT = Path(__file__).resolve().parents[1]
 SITELER = {
     "maximum": {"url": "https://www.maximum.com.tr/kampanyalar", "kart": ".camp_cardsAll .card", "baslik": ".card-text", "link": "a[href*='/kampanyalar/']", "daha": ".CampAllShow", "detay": ".campaign-detail-desc"},
-    "bankkart": {"url": "https://www.bankkart.com.tr/kampanyalar", "kart": "a.campaign-box", "baslik": ".front .h4", "link": None, "daha": ".btn-all-campaigns", "detay": ".detail-content, .subpage-detail"},
-    "bonus": {"url": "https://www.bonus.com.tr/kampanyalar", "kart": ".campaign-online-list .campaign-box", "baslik": ".campaign-box__title", "link": "a.direct[href*='/kampanyalar/']", "daha": ".campaign-page-button", "detay": ".campaign-detail__content"},
+    "bankkart": {"url": "https://www.bankkart.com.tr/kampanyalar", "kart": "a.campaign-box", "baslik": ".front .h4", "link": None, "daha": ".btn-all-campaigns", "detay": ".detail-content, .subpage-detail", "bos": ".warning-text"},
+    "bonus": {"url": "https://www.bonus.com.tr/kampanyalar", "kart": ".campaign-online-list .campaign-box", "baslik": ".campaign-box__title", "link": "a.direct[href*='/kampanyalar/']", "daha": ".campaign-page-button", "detay": ".campaign-detail__content", "kapat": ".hypeModalBonusClose"},
 }
 BANKKART_KATEGORILER = ["akaryakit", "beyaz-esya-ve-ev-aletleri", "egitim-kitap-ve-kirtasiye", "elektronik-ve-telekomunikasyon", "e-ticaret", "giyim-ve-aksesuar", "hobi-ve-oyuncak", "kuyum-optik-ve-saat", "market-ve-gida", "mobilya-ve-dekorasyon", "turizm-ve-seyahat", "sigorta-ve-bireysel-emeklilik", "yapi-sektoru-ve-iklimlendirme", "genel-kampanyalar", "diger-kampanyalar"]
 KATEGORILER = {"market": "Market", "akaryakit": "Akaryakıt", "yemek": "Yemek & kafe", "giyim": "Giyim", "elektronik": "Elektronik & ev", "seyahat": "Seyahat", "online": "Online alışveriş"}
@@ -243,19 +243,51 @@ class Fetcher:
             await self.browser.close()
             await self.pw.stop()
 
+    async def http_get(self, url):
+        def request():
+            req = Request(url, headers={"User-Agent": "HangiKart-CampaignReader/1.0 (public campaign index)"})
+            with urlopen(req, timeout=35) as response:
+                return response.read().decode("utf-8", errors="replace")
+        return await asyncio.to_thread(request)
+
+    async def dismiss_overlays(self, page, config):
+        """Use normal cookie/promotion controls; never remove or bypass overlays."""
+        dismissed = False
+        reject = page.get_by_text("Reddet", exact=True)
+        if await reject.count() == 1 and await reject.is_visible():
+            await reject.click(timeout=5000)
+            dismissed = True
+        if config.get("kapat"):
+            close = page.locator(config["kapat"])
+            if await close.count() == 1 and await close.is_visible():
+                await close.click(timeout=5000)
+                dismissed = True
+        return dismissed
+
     async def get(self, url, program, listing=False):
         if self.http:
-            def request():
-                req = Request(url, headers={"User-Agent": "HangiKart-CampaignReader/1.0 (public campaign index)"})
-                with urlopen(req, timeout=35) as response:
-                    return response.read().decode("utf-8", errors="replace")
-            return await asyncio.to_thread(request)
+            return await self.http_get(url)
+        from playwright.async_api import Error, TimeoutError as PlaywrightTimeout
         page = await self.context.new_page()
         try:
-            await page.goto(url, wait_until="domcontentloaded", timeout=60000)
+            try:
+                response = await page.goto(url, wait_until="domcontentloaded", timeout=60000)
+            except Error as exc:
+                # A Chromium connection reset is a transport failure, not a
+                # selector failure. Read the same public URL once with urllib.
+                # HTTP denials, challenges and certificate errors never use this path.
+                if "net::ERR_CONNECTION_RESET" not in str(exc):
+                    raise
+                print(f"Bağlantı sıfırlandı; aynı açık sayfa HTTP ile okunuyor: {url}", flush=True)
+                return await self.http_get(url)
+            if response and response.status >= 400:
+                raise ValueError(f"HTTP {response.status}: {url}")
             if listing:
                 config = SITELER[program]
-                await page.locator(config["kart"]).first.wait_for(state="attached", timeout=20000)
+                ready = page.locator(config["kart"])
+                if config.get("bos"):
+                    ready = ready.or_(page.locator(config["bos"]).filter(has_text="kampanyamız bulunmamaktadır"))
+                await ready.first.wait_for(state="attached", timeout=30000)
                 for _ in range(50):
                     before = await page.locator(config["kart"]).count()
                     visible_before = await page.locator(config["kart"] + ":visible").count()
@@ -266,10 +298,17 @@ class Fetcher:
                     href = await button.get_attribute("href")
                     if href and not href.startswith(("#", "javascript:")):
                         break
-                    await button.click(timeout=5000)
+                    await self.dismiss_overlays(page, config)
+                    try:
+                        await button.click(timeout=5000)
+                    except PlaywrightTimeout:
+                        # Promotional windows can appear after the first check.
+                        if not await self.dismiss_overlays(page, config):
+                            raise
+                        await button.click(timeout=5000)
                     try:
                         await page.wait_for_function("([selector, n, v]) => {const a=[...document.querySelectorAll(selector)]; return a.length>n || a.filter(e=>e.getClientRects().length).length>v}", arg=[config["kart"], before, visible_before], timeout=5000)
-                    except Exception:
+                    except PlaywrightTimeout:
                         break
             return await page.content()
         finally:
@@ -284,7 +323,10 @@ async def collect(program, fetcher, rules, limit):
         urls = [config["url"] + "/" + slug for slug in BANKKART_KATEGORILER]
     campaigns = {}
     for url in urls:
-        html = await fetcher.get(url, program, listing=True)
+        try:
+            html = await fetcher.get(url, program, listing=True)
+        except Exception as exc:
+            raise ValueError(f"Liste okunamadı: {url} ({type(exc).__name__}: {exc})") from exc
         records = cards_from_html(html, program, url)
         if not records and program != "bankkart":
             raise ValueError("Liste seçicisi kampanya döndürmedi")
