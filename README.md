@@ -6,6 +6,8 @@ Maximum, Bankkart ve Bonus kampanyalarını alışveriş tutarı ve kategorisine
 
 ## Kullanım
 
+Sayfanın en üstündeki **Kampanyalarda ara** alanı; kampanya adı, marka, koşullar, banka ve kategori içinde kelime arar. Sonuçlar yazdıkça üstte görünür. Türkçe karakterler ve büyük/küçük harf fark etmez; birden fazla kelimenin tamamı aranır. Arama tüm kategorileri ve kanalları kapsar; seçili tarih, kart programı ve doğrulanmamış koşul filtresi korunur. Aramayı temizlemek önceki kategori görünümüne döndürür.
+
 1. Tutar ve kategori seçin. Tarih varsayılan olarak bugündür; isterseniz alışveriş kanalını daraltın.
 2. Yüzde indirimler için kampanya öncesi tutarı girin.
 3. Önerilen kartın altında kampanyanın geçerli olduğu markayı, ürün veya hizmeti ve koşullarını okuyun. Seyahat kategorisi otel, uçak bileti ve araç kiralama gibi farklı hizmetleri kapsar; öneri belirtilen hizmet ve markaya bağlıdır.
